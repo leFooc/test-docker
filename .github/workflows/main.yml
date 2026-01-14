@@ -25,6 +25,9 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Checkout submodules
+        run: bash ./scripts/submodule.sh
+
       - name: Cache next cache
         uses: actions/cache@v4
         with:

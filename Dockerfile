@@ -12,18 +12,10 @@ RUN apk add --no-cache git openssh-client bash
 ### Dependencies
 FROM base_build AS dependencies 
 WORKDIR /app
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=yarn.lock,target=yarn.lock \
-    sha256sum package.json yarn.lock 
 COPY package.json yarn.lock .
-RUN --mount=type=ssh \
-    --mount=type=bind,source=scripts/submodule.sh,target=/app/scripts/submodule.sh \
-    --mount=type=bind,source=.gitmodules,target=/app/.gitmodules \
-    --mount=type=bind,source=.git,target=/app/.git,rw=true \
+RUN \
     ### Add github to known hosts
-    mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts && \
     ### Git clone submodule 
-    git submodule update --init --recursive && \
     ### Install dependencies 
     yarn install --frozen-lockfile 
     
@@ -38,6 +30,7 @@ RUN case "$ENV" in \
     esac
 
 RUN --mount=type=bind,from=next-cache,target=/app/.next/cache,rw=true \
+    --mount=type=bind,source=/web-uikit/,target=/app/web-uikit \
     echo $ENV && \
     yarn build && \
     mkdir -p /app/output_cache && \
