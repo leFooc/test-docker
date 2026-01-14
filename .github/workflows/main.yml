@@ -1,0 +1,78 @@
+name: Main
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: "dev-deploy-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Cache next cache
+        uses: actions/cache@v4
+        with:
+          path: ./.next/cache
+          key: ${{ runner.os }}-next-cache-${{ hashFiles('**/yarn.lock') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-next-cache-${{ hashFiles('**/yarn.lock') }}-
+            ${{ runner.os }}-next-cache-
+
+      - name: Ensure Next.js cache directory exists
+        run: mkdir -p ./.next/cache
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          load: true
+          target: runner
+          platforms: linux/amd64
+          tags: tms/sale-web:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          ssh: |
+            default=${{ env.SSH_AUTH_SOCK }}
+          build-args: |
+            BUILD_SOURCE=builder_ci_optimized
+            ENV=production
+          build-contexts: |
+            next-cache=./.next/cache
+
+      - name: Extract cache
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          load: false
+          target: export_cache
+          platforms: linux/amd64
+          outputs: type=local,dest=./.next/cache
+          cache-from: type=gha
+          ssh: |
+            default=${{ env.SSH_AUTH_SOCK }}
+          build-args: |
+            BUILD_SOURCE=builder_ci_optimized
+            ENV=production
+          build-contexts: |
+            next-cache=./.next/cache
+
+      - name: Print image layers
+        run: docker image inspect tms/sale-web:latest --format='{{json .RootFS.Layers}}'

@@ -1,0 +1,3 @@
+[submodule "web-uikit"]
+	path = web-uikit
+	url = git@github.com:Apollogix/web-uikit.git
