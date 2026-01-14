@@ -15,6 +15,7 @@ WORKDIR /app
 COPY package*.json yarn.lock ./
 RUN --mount=type=ssh \
     --mount=type=bind,source=scripts/submodule.sh,target=/app/scripts/submodule.sh \
+    --mount=type=bind,source=.gitmodules,target=/app/.gitmodules \
     --mount=type=bind,source=.git,target=/app/.git,rw=true \
     ### Add github to known hosts
     mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts && \
