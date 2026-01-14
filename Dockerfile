@@ -11,8 +11,11 @@ RUN apk add --no-cache git openssh-client bash
 
 ### Dependencies
 FROM base_build AS dependencies 
-WORKDIR /app 
-COPY package.json yarn.lock ./
+WORKDIR /app
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=yarn.lock,target=yarn.lock \
+    sha256sum package.json yarn.lock 
+COPY package.json yarn.lock .
 RUN --mount=type=ssh \
     --mount=type=bind,source=scripts/submodule.sh,target=/app/scripts/submodule.sh \
     --mount=type=bind,source=.gitmodules,target=/app/.gitmodules \
