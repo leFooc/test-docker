@@ -11,6 +11,7 @@
     "submodule": "bash ./scripts/submodule.sh"
   },
   "dependencies": {
+    "axios": "^1.12.2",
     "next": "15.4.10",
     "react": "^18",
     "react-dom": "^18"

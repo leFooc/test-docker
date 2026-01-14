@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ES2020",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -16,12 +16,49 @@
     "plugins": [
       {
         "name": "next"
-      }
+      }, 
     ],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"], 
+      "@assets": ["src/assets"],
+      "@assets/*": ["src/assets/*"],
+      "@hooks": ["src/hooks"],
+      "@hooks/*": ["src/hooks/*"],
+      "@constants": ["src/constants"],
+      "@constants/*": ["src/constants/*"],
+      "@services": ["src/services"],
+      "@services/*": ["src/services/*"],
+      "@components": ["src/components"],
+      "@components/*": ["src/components/*"],
+      "@containers": ["src/containers"],
+      "@containers/*": ["src/containers/*"],
+      "@utils": ["src/utils"],
+      "@utils/*": ["src/utils/*"],
+      "@i18n": ["src/i18n"],
+      "@i18n/*": ["src/i18n/*"],
+      "@core": ["src/core"],
+      "@core/*": ["src/core/*"],
+      "uikit": [
+        "web-uikit/mui-v5"
+      ],
+      "uikit-common": [
+        "web-uikit/common"
+      ],
+      "uikit-common/*": [
+        "web-uikit/common/*"
+      ],
+      "uikit/*": [
+        "web-uikit/mui-v5/*"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts", 
+    "src/@types/index.d.ts"
+  ],
+  "exclude": ["node_modules", "web-uikit", "analyze"]
 }
